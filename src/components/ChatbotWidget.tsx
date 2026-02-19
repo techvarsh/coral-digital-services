@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send } from "lucide-react";
 
-type Step = "greet" | "service" | "name" | "phone" | "email" | "done";
+const WHATSAPP_URL =
+  "https://wa.me/918962659561?text=Hi%2C%20I'm%20interested%20in%20your%20services.%20Please%20share%20details.";
+
+type Message = { from: "bot" | "user"; text: string; options?: string[] };
 
 const serviceOptions = [
   "Website Development",
@@ -13,74 +16,181 @@ const serviceOptions = [
   "Other",
 ];
 
+const faqMap: Record<string, string> = {
+  pricing:
+    "Our packages start from ₹14,999 (Starter), ₹29,999 (Business — most popular), and ₹59,999 (Premium Automation). Final pricing depends on project scope. Shall I connect you with our team for a custom quote?",
+  timeline:
+    "Typical timelines: Starter sites in 5-7 days, Business packages in 10-15 days, and Premium systems in 3-4 weeks. We always prioritize quality & speed! 🚀",
+  services:
+    "We offer: Website Development, AI Chatbot Integration, WhatsApp Automation, Coaching & Tenant Management Systems, Restaurant Ordering, Database Systems, and Digital Marketing.",
+  support:
+    "All plans include dedicated support — 1 month (Starter), 3 months (Business), and 6 months (Premium). We also offer 24/7 priority support on premium plans.",
+  payment:
+    "We accept UPI, bank transfer, and online payments. We typically work with 50% advance and 50% on delivery.",
+};
+
+const faqOptions = ["Pricing", "Timeline", "Services", "Support", "Payment"];
+
+type Step = "greet" | "faq_or_service" | "service_selected" | "collect_name" | "collect_phone" | "collect_email" | "done";
+
 const ChatbotWidget = () => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("greet");
-  const [data, setData] = useState({ service: "", name: "", phone: "", email: "" });
-  const [input, setInput] = useState("");
-
-  const messages: { from: "bot" | "user"; text: string }[] = [];
-
-  // Build conversation based on step
-  messages.push({ from: "bot", text: "👋 Hi! Welcome to CORAL DIGITALS. How can I help you today?" });
-
-  if (step === "greet") {
-    // Show service selection
-  } else if (step === "service") {
-    messages.push({ from: "user", text: data.service });
-    messages.push({ from: "bot", text: `Great choice! What's your name?` });
-  } else if (step === "name") {
-    messages.push({ from: "user", text: data.service });
-    messages.push({ from: "bot", text: `Great choice! What's your name?` });
-    messages.push({ from: "user", text: data.name });
-    messages.push({ from: "bot", text: `Nice to meet you, ${data.name}! What's your phone number?` });
-  } else if (step === "phone") {
-    messages.push({ from: "user", text: data.service });
-    messages.push({ from: "bot", text: `What's your name?` });
-    messages.push({ from: "user", text: data.name });
-    messages.push({ from: "bot", text: `What's your phone number?` });
-    messages.push({ from: "user", text: data.phone });
-    messages.push({ from: "bot", text: `And your email address?` });
-  } else if (step === "email" || step === "done") {
-    messages.push({ from: "user", text: data.service });
-    messages.push({ from: "user", text: data.name });
-    messages.push({ from: "user", text: data.phone });
-    messages.push({ from: "user", text: data.email });
-    messages.push({
+  const [messages, setMessages] = useState<Message[]>([
+    {
       from: "bot",
-      text: `Thank you, ${data.name}! 🎉 Our team will reach out soon. You can also chat with us on WhatsApp for faster response!`,
-    });
-  }
+      text: "👋 Hi! Welcome to **CORAL DIGITALS** — your AI-powered digital partner. How can I help you today?",
+      options: ["Explore Services", "Ask a Question", "Get Free Consultation"],
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [leadData, setLeadData] = useState({ service: "", name: "", phone: "", email: "" });
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const handleServiceSelect = (s: string) => {
-    setData((d) => ({ ...d, service: s }));
-    setStep("service");
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const addMsg = (from: "bot" | "user", text: string, options?: string[]) => {
+    setMessages((prev) => [...prev, { from, text, options }]);
+  };
+
+  const handleOptionClick = (option: string) => {
+    addMsg("user", option);
+
+    if (step === "greet") {
+      if (option === "Explore Services") {
+        setTimeout(() => {
+          addMsg("bot", "Great! Which service are you interested in?", serviceOptions);
+          setStep("faq_or_service");
+        }, 400);
+      } else if (option === "Ask a Question") {
+        setTimeout(() => {
+          addMsg("bot", "Sure! What would you like to know about?", faqOptions);
+          setStep("faq_or_service");
+        }, 400);
+      } else {
+        setTimeout(() => {
+          addMsg("bot", "Awesome! Let's get you connected. What's your **name**?");
+          setStep("collect_name");
+        }, 400);
+      }
+    } else if (step === "faq_or_service") {
+      const key = option.toLowerCase();
+      if (faqMap[key]) {
+        setTimeout(() => {
+          addMsg("bot", faqMap[key]);
+          setTimeout(() => {
+            addMsg("bot", "Would you like to book a free consultation or explore more?", [
+              "Book Free Consultation",
+              "Explore Services",
+              "Ask Another Question",
+            ]);
+          }, 600);
+        }, 400);
+      } else {
+        setLeadData((d) => ({ ...d, service: option }));
+        setTimeout(() => {
+          addMsg("bot", `Excellent choice — **${option}**! Let me connect you with our team. What's your **name**?`);
+          setStep("collect_name");
+        }, 400);
+      }
+    }
   };
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    if (step === "service") {
-      setData((d) => ({ ...d, name: input.trim() }));
-      setStep("name");
-    } else if (step === "name") {
-      setData((d) => ({ ...d, phone: input.trim() }));
-      setStep("phone");
-    } else if (step === "phone") {
-      setData((d) => ({ ...d, email: input.trim() }));
-      setStep("done");
-    }
+    const val = input.trim();
+    if (!val) return;
+    addMsg("user", val);
     setInput("");
+
+    if (step === "faq_or_service") {
+      // Free-text question → try to match FAQ
+      const lowerVal = val.toLowerCase();
+      const matchedKey = Object.keys(faqMap).find((k) => lowerVal.includes(k));
+      if (matchedKey) {
+        setTimeout(() => {
+          addMsg("bot", faqMap[matchedKey]);
+          setTimeout(() => {
+            addMsg("bot", "Anything else I can help with?", ["Book Free Consultation", "Explore Services", "Ask Another Question"]);
+          }, 600);
+        }, 400);
+      } else {
+        setTimeout(() => {
+          addMsg(
+            "bot",
+            "Great question! For detailed answers, I'd recommend speaking with our team directly. Shall I collect your details for a **free consultation**?",
+            ["Yes, Let's Do It", "Chat on WhatsApp"]
+          );
+        }, 400);
+      }
+    } else if (step === "collect_name") {
+      if (val.length < 2 || val.length > 100) {
+        setTimeout(() => addMsg("bot", "Please enter a valid name."), 300);
+        return;
+      }
+      setLeadData((d) => ({ ...d, name: val }));
+      setTimeout(() => {
+        addMsg("bot", `Nice to meet you, **${val}**! 📱 What's your phone number?`);
+        setStep("collect_phone");
+      }, 400);
+    } else if (step === "collect_phone") {
+      if (!/^\d{7,15}$/.test(val.replace(/[\s\-+]/g, ""))) {
+        setTimeout(() => addMsg("bot", "Please enter a valid phone number (digits only)."), 300);
+        return;
+      }
+      setLeadData((d) => ({ ...d, phone: val }));
+      setTimeout(() => {
+        addMsg("bot", "📧 And your email address?");
+        setStep("collect_email");
+      }, 400);
+    } else if (step === "collect_email") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        setTimeout(() => addMsg("bot", "Please enter a valid email address."), 300);
+        return;
+      }
+      setLeadData((d) => ({ ...d, email: val }));
+      setTimeout(() => {
+        addMsg(
+          "bot",
+          `🎉 Thank you, **${leadData.name}**! Our team will reach out to you shortly.\n\nFor faster response, connect with us directly on WhatsApp!`,
+          ["Chat on WhatsApp", "Start Over"]
+        );
+        setStep("done");
+      }, 400);
+    }
   };
 
-  const reset = () => {
-    setStep("greet");
-    setData({ service: "", name: "", phone: "", email: "" });
-    setInput("");
+  const handleSpecialOption = (option: string) => {
+    if (option === "Chat on WhatsApp") {
+      window.open(WHATSAPP_URL, "_blank");
+    } else if (option === "Start Over" || option === "Ask Another Question") {
+      addMsg("user", option);
+      setTimeout(() => {
+        addMsg("bot", "Sure! What would you like to know?", faqOptions);
+        setStep("faq_or_service");
+      }, 400);
+    } else if (option === "Book Free Consultation" || option === "Yes, Let's Do It") {
+      addMsg("user", option);
+      setTimeout(() => {
+        addMsg("bot", "Let's get you started! What's your **name**?");
+        setStep("collect_name");
+      }, 400);
+    } else {
+      handleOptionClick(option);
+    }
+  };
+
+  const showInput = ["collect_name", "collect_phone", "collect_email", "faq_or_service"].includes(step);
+  const placeholders: Record<string, string> = {
+    collect_name: "Enter your name",
+    collect_phone: "Enter phone number",
+    collect_email: "Enter email address",
+    faq_or_service: "Type a question...",
   };
 
   return (
     <>
-      {/* Toggle */}
       <button
         onClick={() => setOpen(!open)}
         aria-label="Open chatbot"
@@ -95,75 +205,60 @@ const ChatbotWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 z-50 flex h-[440px] w-[340px] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card"
+            className="fixed bottom-24 right-6 z-50 flex h-[480px] w-[360px] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card"
           >
             {/* Header */}
             <div className="flex items-center gap-3 bg-gradient-cta px-4 py-3">
               <Bot size={20} className="text-primary-foreground" />
               <div>
                 <p className="text-sm font-semibold text-primary-foreground">CORAL Assistant</p>
-                <p className="text-[10px] text-primary-foreground/70">Online</p>
+                <p className="text-[10px] text-primary-foreground/70">Online — Typically replies instantly</p>
               </div>
             </div>
 
             {/* Messages */}
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
-                      m.from === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-foreground"
-                    }`}
-                  >
-                    {m.text}
+                <div key={i}>
+                  <div className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed ${
+                        m.from === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-foreground"
+                      }`}
+                    >
+                      {m.text.split("**").map((part, j) =>
+                        j % 2 === 1 ? <strong key={j}>{part}</strong> : <span key={j}>{part}</span>
+                      )}
+                    </div>
                   </div>
+                  {m.options && m.from === "bot" && i === messages.length - 1 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {m.options.map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => handleSpecialOption(opt)}
+                          className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
-
-              {/* Service buttons */}
-              {step === "greet" && (
-                <div className="flex flex-wrap gap-2">
-                  {serviceOptions.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => handleServiceSelect(s)}
-                      className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {step === "done" && (
-                <div className="flex gap-2">
-                  <a
-                    href="https://wa.me/919999999999?text=Hi%2C%20I'm%20interested%20in%20your%20services."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full bg-green-500 px-4 py-1.5 text-xs font-semibold text-white"
-                  >
-                    Chat on WhatsApp
-                  </a>
-                  <button onClick={reset} className="rounded-full border border-border px-4 py-1.5 text-xs text-muted-foreground">
-                    Start Over
-                  </button>
-                </div>
-              )}
+              <div ref={bottomRef} />
             </div>
 
             {/* Input */}
-            {step !== "greet" && step !== "done" && (
+            {showInput && (
               <div className="flex items-center gap-2 border-t border-border p-3">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder={
-                    step === "service" ? "Enter your name" : step === "name" ? "Enter phone number" : "Enter email"
-                  }
+                  placeholder={placeholders[step] || "Type a message..."}
                   className="flex-1 rounded-lg border border-border bg-background/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
                 <button onClick={handleSend} className="rounded-lg bg-primary p-2 text-primary-foreground">

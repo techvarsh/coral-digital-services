@@ -94,7 +94,7 @@ const ContactSection = () => {
             <div className="space-y-6">
               {[
                 { icon: Mail, label: "Email", value: "hello@coraldigitals.com" },
-                { icon: Phone, label: "Phone", value: "+91 99999 99999" },
+                { icon: Phone, label: "Phone", value: "+91 89626 59561" },
                 { icon: MapPin, label: "Location", value: "India" },
               ].map((c) => (
                 <div key={c.label} className="flex items-start gap-4">
