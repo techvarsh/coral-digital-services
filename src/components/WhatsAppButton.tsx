@@ -1,7 +1,7 @@
 import { MessageSquare } from "lucide-react";
 
 const WHATSAPP_URL =
-  "https://wa.me/919999999999?text=Hi%2C%20I'm%20interested%20in%20your%20services.%20Please%20share%20details.";
+  "https://wa.me/918962659561?text=Hi%2C%20I'm%20interested%20in%20your%20services.%20Please%20share%20details.";
 
 const WhatsAppButton = () => (
   <a
