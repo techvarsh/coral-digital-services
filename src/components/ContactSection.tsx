@@ -1,15 +1,57 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const ContactSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    service: "",
+    message: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      toast.error("Please fill in name, email and message.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.from("contact_submissions").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      service: form.service || null,
+      message: form.message.trim(),
+    });
+    setLoading(false);
+
+    if (error) {
+      toast.error("Could not send message. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
+    toast.success("Message sent! We'll be in touch soon.");
+    setForm({ name: "", email: "", phone: "", service: "", message: "" });
     setTimeout(() => setSubmitted(false), 3000);
   };
 
@@ -38,6 +80,9 @@ const ContactSection = () => {
           >
             <div className="grid gap-5 sm:grid-cols-2">
               <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
                 type="text"
                 placeholder="Your Name"
                 required
@@ -45,6 +90,9 @@ const ContactSection = () => {
                 className="rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
               <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
                 type="email"
                 placeholder="Email Address"
                 required
@@ -53,14 +101,19 @@ const ContactSection = () => {
               />
             </div>
             <input
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
               type="tel"
               placeholder="Phone Number"
               maxLength={20}
               className="w-full rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             <select
+              name="service"
+              value={form.service}
+              onChange={handleChange}
               className="w-full rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              defaultValue=""
             >
               <option value="" disabled>Select Service</option>
               <option>Website Development</option>
@@ -68,19 +121,23 @@ const ContactSection = () => {
               <option>Custom Application</option>
               <option>Database Management</option>
               <option>Digital Marketing</option>
-              <option>Custom Application</option>
             </select>
             <textarea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
               placeholder="Tell us about your project..."
               rows={4}
+              required
               maxLength={1000}
               className="w-full resize-none rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-cta py-3.5 text-sm font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-cta py-3.5 text-sm font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
             >
-              {submitted ? "Message Sent! ✓" : <>Send Message <Send size={14} /></>}
+              {loading ? "Sending..." : submitted ? "Message Sent! ✓" : <>Send Message <Send size={14} /></>}
             </button>
           </motion.form>
 
