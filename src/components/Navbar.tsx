@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "@/assets/logo.jpeg";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -28,9 +29,12 @@ const Navbar = () => {
       }`}
     >
       <nav className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8">
-        <a href="#home" className="font-heading text-xl font-bold tracking-tight">
-          <span className="text-gradient">CORAL</span>{" "}
-          <span className="text-foreground">DIGITALS</span>
+        <a href="#home" className="flex items-center gap-2 font-heading text-xl font-bold tracking-tight">
+          <img src={logo} alt="CORAL Smart Solutions logo" className="h-10 w-10 rounded-md object-contain" />
+          <span>
+            <span className="text-gradient">CORAL</span>{" "}
+            <span className="text-foreground">DIGITALS</span>
+          </span>
         </a>
 
         {/* Desktop */}
