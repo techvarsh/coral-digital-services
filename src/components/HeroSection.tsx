@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-const WHATSAPP_URL =
-  "https://wa.me/918962659561?text=Hi%2C%20I'm%20interested%20in%20your%20services.%20Please%20share%20details.";
 
 const HeroSection = () => {
   return (
@@ -66,15 +64,6 @@ const HeroSection = () => {
             >
               Get Free Consultation
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-8 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
-            >
-              <MessageCircle size={16} className="text-green-400" />
-              Chat on WhatsApp
             </a>
           </motion.div>
         </div>

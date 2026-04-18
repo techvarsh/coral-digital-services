@@ -2,16 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send } from "lucide-react";
 
-const WHATSAPP_URL =
-  "https://wa.me/918962659561?text=Hi%2C%20I'm%20interested%20in%20your%20services.%20Please%20share%20details.";
-
 type Message = { from: "bot" | "user"; text: string; options?: string[] };
 
 const serviceOptions = [
   "Website Development",
   "AI Chatbot",
-  "WhatsApp Integration",
   "Digital Marketing",
+  "Database Management",
   "Custom Application",
   "Other",
 ];
@@ -22,7 +19,7 @@ const faqMap: Record<string, string> = {
   timeline:
     "Typical timelines: Starter sites in 5-7 days, Business packages in 10-15 days, and Premium systems in 3-4 weeks. We always prioritize quality & speed! 🚀",
   services:
-    "We offer: Website Development, AI Chatbot Integration, WhatsApp Automation, Coaching & Tenant Management Systems, Restaurant Ordering, Database Systems, and Digital Marketing.",
+    "We offer: Website Development, AI Chatbot Integration, Coaching & Tenant Management Systems, Restaurant Ordering, Database Systems, and Digital Marketing.",
   support:
     "All plans include dedicated support — 1 month (Starter), 3 months (Business), and 6 months (Premium). We also offer 24/7 priority support on premium plans.",
   payment:
@@ -120,7 +117,7 @@ const ChatbotWidget = () => {
           addMsg(
             "bot",
             "Great question! For detailed answers, I'd recommend speaking with our team directly. Shall I collect your details for a **free consultation**?",
-            ["Yes, Let's Do It", "Chat on WhatsApp"]
+            ["Yes, Let's Do It"]
           );
         }, 400);
       }
@@ -153,8 +150,8 @@ const ChatbotWidget = () => {
       setTimeout(() => {
         addMsg(
           "bot",
-          `🎉 Thank you, **${leadData.name}**! Our team will reach out to you shortly.\n\nFor faster response, connect with us directly on WhatsApp!`,
-          ["Chat on WhatsApp", "Start Over"]
+          `🎉 Thank you, **${leadData.name}**! Our team will reach out to you shortly via phone or email.`,
+          ["Start Over"]
         );
         setStep("done");
       }, 400);
@@ -162,9 +159,7 @@ const ChatbotWidget = () => {
   };
 
   const handleSpecialOption = (option: string) => {
-    if (option === "Chat on WhatsApp") {
-      window.open(WHATSAPP_URL, "_blank");
-    } else if (option === "Start Over" || option === "Ask Another Question") {
+    if (option === "Start Over" || option === "Ask Another Question") {
       addMsg("user", option);
       setTimeout(() => {
         addMsg("bot", "Sure! What would you like to know?", faqOptions);

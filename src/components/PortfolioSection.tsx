@@ -5,7 +5,7 @@ import { ExternalLink } from "lucide-react";
 const projects = [
   { title: "E-Commerce Platform", category: "Web Development", color: "from-blue-600/20 to-cyan-600/20" },
   { title: "AI Customer Support Bot", category: "AI Chatbot", color: "from-purple-600/20 to-pink-600/20" },
-  { title: "Restaurant Ordering System", category: "WhatsApp Integration", color: "from-green-600/20 to-emerald-600/20" },
+  { title: "Restaurant Ordering System", category: "Web Application", color: "from-green-600/20 to-emerald-600/20" },
   { title: "Coaching Institute CRM", category: "Management System", color: "from-orange-600/20 to-amber-600/20" },
   { title: "Real Estate Lead Funnel", category: "Digital Marketing", color: "from-rose-600/20 to-red-600/20" },
   { title: "Tenant Management Portal", category: "Custom Application", color: "from-indigo-600/20 to-violet-600/20" },

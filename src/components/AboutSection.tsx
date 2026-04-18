@@ -21,7 +21,7 @@ const AboutSection = () => {
             Empowering Businesses with <span className="text-gradient">AI & Automation</span>
           </h2>
           <p className="mt-6 text-muted-foreground leading-relaxed">
-            At <strong className="text-foreground">CORAL SMART SOLUTIONS</strong>, we help businesses go digital with cutting-edge AI-powered websites, smart chatbots, WhatsApp automation, and custom management systems. From startups to enterprises, our goal is to turn your vision into a scalable, revenue-generating digital presence.
+            At <strong className="text-foreground">CORAL SMART SOLUTIONS</strong>, we help businesses go digital with cutting-edge AI-powered websites, smart chatbots, and custom management systems. From startups to enterprises, our goal is to turn your vision into a scalable, revenue-generating digital presence.
           </p>
         </motion.div>
 

@@ -7,7 +7,6 @@ import PortfolioSection from "@/components/PortfolioSection";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import ChatbotWidget from "@/components/ChatbotWidget";
 
 const Index = () => {
@@ -22,7 +21,6 @@ const Index = () => {
       <WhyChooseUs />
       <ContactSection />
       <Footer />
-      <WhatsAppButton />
       <ChatbotWidget />
     </main>
   );
