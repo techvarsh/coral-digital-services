@@ -9,15 +9,20 @@ const footerLinks = {
   ],
 };
 
+import logo from "@/assets/logo.jpeg";
+
 const Footer = () => (
   <footer className="border-t border-border/50 bg-card py-14">
     <div className="container mx-auto px-4 lg:px-8">
       <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div>
-          <h3 className="font-heading text-lg font-bold">
-            <span className="text-gradient">CORAL</span> DIGITALS
-          </h3>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="CORAL Smart Solutions logo" className="h-10 w-10 rounded-md object-contain" />
+            <h3 className="font-heading text-lg font-bold">
+              <span className="text-gradient">CORAL</span> DIGITALS
+            </h3>
+          </div>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Smart digital solutions for growing businesses. AI-powered, custom-built, and designed to convert.
           </p>
