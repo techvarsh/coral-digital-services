@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = { from: "bot" | "user"; text: string; options?: string[] };
 
@@ -146,11 +147,27 @@ const ChatbotWidget = () => {
         setTimeout(() => addMsg("bot", "Please enter a valid email address."), 300);
         return;
       }
-      setLeadData((d) => ({ ...d, email: val }));
+      const finalLead = { ...leadData, email: val };
+      setLeadData(finalLead);
+
+      // Save lead to database
+      supabase
+        .from("leads")
+        .insert({
+          name: finalLead.name,
+          phone: finalLead.phone,
+          email: finalLead.email,
+          service: finalLead.service || null,
+          source: "chatbot",
+        })
+        .then(({ error }) => {
+          if (error) console.error("Lead save error:", error);
+        });
+
       setTimeout(() => {
         addMsg(
           "bot",
-          `🎉 Thank you, **${leadData.name}**! Our team will reach out to you shortly via phone or email.`,
+          `🎉 Thank you, **${finalLead.name}**! Our team will reach out to you shortly via phone or email.`,
           ["Start Over"]
         );
         setStep("done");
