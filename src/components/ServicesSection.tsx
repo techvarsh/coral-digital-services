@@ -3,7 +3,6 @@ import { useRef } from "react";
 import {
   Globe,
   Bot,
-  MessageCircle,
   GraduationCap,
   Building2,
   UtensilsCrossed,
@@ -14,10 +13,9 @@ import {
 const services = [
   { icon: Globe, title: "Dynamic Website Development", desc: "Stunning, fast websites tailored for conversions and growth." },
   { icon: Bot, title: "AI Chatbot Integration", desc: "24/7 intelligent chatbots that qualify leads and answer queries." },
-  { icon: MessageCircle, title: "WhatsApp Integration", desc: "Automated WhatsApp messaging for seamless customer engagement." },
   { icon: GraduationCap, title: "Coaching Management System", desc: "All-in-one platform to manage coaching institutes digitally." },
   { icon: Building2, title: "Tenant Management App", desc: "Simplify rent collection, complaints & tenant communication." },
-  { icon: UtensilsCrossed, title: "Restaurant Website + WhatsApp Ordering", desc: "Online menus with WhatsApp-based order placement." },
+  { icon: UtensilsCrossed, title: "Restaurant Ordering System", desc: "Online menus with seamless order placement for diners." },
   { icon: Database, title: "Custom Database Management", desc: "Robust DBMS solutions to organize and scale your data." },
   { icon: TrendingUp, title: "Digital Marketing & Lead Gen", desc: "SEO, ads & funnels to drive traffic and generate quality leads." },
 ];

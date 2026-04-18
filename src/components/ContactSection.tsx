@@ -65,7 +65,7 @@ const ContactSection = () => {
               <option value="" disabled>Select Service</option>
               <option>Website Development</option>
               <option>AI Chatbot Integration</option>
-              <option>WhatsApp Integration</option>
+              <option>Custom Application</option>
               <option>Database Management</option>
               <option>Digital Marketing</option>
               <option>Custom Application</option>

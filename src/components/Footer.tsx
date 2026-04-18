@@ -3,7 +3,6 @@ const footerLinks = {
   Services: [
     "Website Development",
     "AI Chatbot",
-    "WhatsApp Integration",
     "Digital Marketing",
     "Custom Applications",
     "Database Systems",

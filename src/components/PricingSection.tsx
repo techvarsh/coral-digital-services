@@ -14,7 +14,7 @@ const plans = [
       "Mobile Responsive Design",
       "Basic SEO Setup",
       "Contact Form",
-      "WhatsApp Click-to-Chat",
+      "Click-to-Call Button",
       "Basic Security",
       "1 Month Support",
     ],
